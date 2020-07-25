@@ -5,4 +5,6 @@
     <color name="colorAccent">#80cbc4</color>
     <color name="textColorBlack">#333333</color>
     <color name="productImageBackground">#80FFFFFF</color>
+    <color name="carouselStrokeColor">#FF777777</color>
+    <color name="productCardBackground">#cfcfcf</color>
 </resources>

@@ -9,15 +9,15 @@
         android:id="@+id/carouselView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:fillColor="#80FFFFFF"
+        app:fillColor="@color/productImageBackground"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:pageColor="#00000000"
+        app:pageColor="@android:color/white"
         app:radius="6dp"
         app:slideInterval="3000"
-        app:strokeColor="#FF777777"
+        app:strokeColor="@color/carouselStrokeColor"
         app:strokeWidth="1dp" />
 
     <androidx.constraintlayout.widget.Guideline
