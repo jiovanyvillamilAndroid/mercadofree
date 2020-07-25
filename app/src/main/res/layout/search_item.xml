@@ -12,11 +12,11 @@
         android:layout_height="150dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/rounded_gray_background"
-        android:contentDescription="Hola"
         android:elevation="3dp"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/productCard"

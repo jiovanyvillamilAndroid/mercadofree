@@ -4,4 +4,10 @@
     <string name="coming_soon">Próximamente</string>
     <string name="new_word">Nuevo</string>
     <string name="used">Usado</string>
+    <string name="product_detail_error_message">Lo sentimos, no pudimos entregarte los detalles del producto.</string>
+    <string name="try_again">Intentar Nuevamente</string>
+    <string name="show_more">Ver más</string>
+    <string name="stock_available">Stock Disponible</string>
+    <string name="app_name_title">MercadoFree</string>
+    <string name="search_your_next_product">Busca tu próximo producto</string>
 </resources>

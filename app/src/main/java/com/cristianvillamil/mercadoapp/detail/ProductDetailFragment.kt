@@ -40,17 +40,27 @@ class ProductDetailFragment : Fragment() {
         productDetailViewModel.getProductDetail(args.productId)
         productDetailViewModel.getOnItemDetailResponseLiveData().observe(viewLifecycleOwner,
             Observer {
+                errorContainer.visibility = View.GONE
                 when (it) {
                     is MainRepository.Result.Success<ProductDetailResponse?> -> {
                         it.data?.let { data ->
+                            contentContainer.visibility = View.VISIBLE
                             bindData(data)
                         }
                     }
                     is MainRepository.Result.Error -> {
-                        it.throwable.printStackTrace()
+                        showError()
                     }
                 }
             })
+    }
+
+    private fun showError() {
+        contentContainer.visibility = View.GONE
+        errorContainer.visibility = View.VISIBLE
+        tryAgainButton.setOnClickListener {
+            productDetailViewModel.getProductDetail(args.productId)
+        }
     }
 
     private fun bindData(productDetailResponse: ProductDetailResponse) {
