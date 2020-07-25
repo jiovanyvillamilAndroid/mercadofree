@@ -6,16 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cristianvillamil.mercadoapp.network.ApiHelper
 import com.cristianvillamil.mercadoapp.network.MainRepository
-import com.cristianvillamil.mercadoapp.network.SearchResponse
+import com.cristianvillamil.mercadoapp.search.model.SearchResult
 import kotlinx.coroutines.launch
 
 class SearchViewModel : ViewModel() {
     private var mainRepository: MainRepository? = null
 
-    private var onItemSearchResponse: MutableLiveData<MainRepository.Result<SearchResponse?>> =
+    private var onItemSearchResponse: MutableLiveData<MainRepository.Result<List<SearchResult>>> =
         MutableLiveData()
 
-    fun getOnItemSearchResponseLiveData(): LiveData<MainRepository.Result<SearchResponse?>> =
+    fun getOnItemSearchResponseLiveData(): LiveData<MainRepository.Result<List<SearchResult>>> =
         onItemSearchResponse
 
     fun setApiHelper(apiHelper: ApiHelper) {
@@ -27,7 +27,7 @@ class SearchViewModel : ViewModel() {
             runCatching {
                 mainRepository?.let { mainRepository ->
                     onItemSearchResponse.value =
-                        MainRepository.Result.Success(mainRepository.getUsers(itemName))
+                        MainRepository.Result.Success(mainRepository.getUsers(itemName).result)
                 }
             }.onFailure { exception ->
                 onItemSearchResponse.value = MainRepository.Result.Error(exception)

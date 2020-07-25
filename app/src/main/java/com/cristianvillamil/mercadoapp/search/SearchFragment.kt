@@ -17,7 +17,7 @@ import com.cristianvillamil.mercadoapp.R
 import com.cristianvillamil.mercadoapp.network.ApiHelper
 import com.cristianvillamil.mercadoapp.network.MainRepository
 import com.cristianvillamil.mercadoapp.network.RetrofitBuilder
-import com.cristianvillamil.mercadoapp.network.SearchResponse
+import com.cristianvillamil.mercadoapp.search.model.SearchResult
 import com.cristianvillamil.mercadoapp.search.recycler_view.SearchAdapter
 import kotlinx.android.synthetic.main.fragment_search.*
 
@@ -42,18 +42,47 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         initSearchTextListener()
-        searchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
-        searchViewModel.setApiHelper(ApiHelper(RetrofitBuilder.apiService))
+        initViewModel()
+        initOnSearchItemResponseObserver()
+    }
+
+    private fun initOnSearchItemResponseObserver() {
         searchViewModel.getOnItemSearchResponseLiveData().observe(viewLifecycleOwner,
             Observer {
                 when (it) {
-                    is MainRepository.Result.Success<SearchResponse?> -> {
-                        val results = it.data?.result.orEmpty()
-                        searchAdapter.setItems(results)
-                        motionLayout.transitionToState(R.id.onLoadSuccess)
+                    is MainRepository.Result.Success<List<SearchResult>> -> {
+                        onSearchSuccess(it.data)
+                    }
+                    is MainRepository.Result.Error -> {
+                        showState(false)
                     }
                 }
             })
+    }
+
+    private fun showState(emptyState: Boolean) {
+        recyclerView.visibility = View.GONE
+        if (emptyState) {
+            animationView.setAnimation(R.raw.empty_state)
+        } else {
+            animationView.setAnimation(R.raw.error)
+        }
+        motionLayout.transitionToState(R.id.onError)
+        animationView.playAnimation()
+    }
+
+    private fun onSearchSuccess(results: List<SearchResult>) {
+        if (results.isEmpty()) {
+            showState(true)
+        } else {
+            searchAdapter.setItems(results)
+            motionLayout.transitionToState(R.id.onLoadSuccess)
+        }
+    }
+
+    private fun initViewModel() {
+        searchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
+        searchViewModel.setApiHelper(ApiHelper(RetrofitBuilder.apiService))
     }
 
     private fun initRecyclerView() {
@@ -78,9 +107,7 @@ class SearchFragment : Fragment() {
                     timeHandler.postDelayed({
                         when {
                             textToSearch.length >= minCharsForSearch -> {
-                                motionLayout.transitionToState(R.id.end)
-                                hideKeyboard()
-                                searchViewModel.searchItem(textToSearch)
+                                initSearch(textToSearch)
                             }
                             textToSearch.length == 1 || textToSearch.isEmpty() -> {
                                 motionLayout.transitionToState(R.id.start)
@@ -92,6 +119,14 @@ class SearchFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun initSearch(textToSearch: String) {
+        animationView.setAnimation(R.raw.search)
+        animationView.playAnimation()
+        motionLayout.transitionToState(R.id.end)
+        hideKeyboard()
+        searchViewModel.searchItem(textToSearch)
     }
 
     private fun hideKeyboard() {

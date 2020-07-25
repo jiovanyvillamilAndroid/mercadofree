@@ -14,10 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.cristianvillamil.mercadoapp.R
-import com.cristianvillamil.mercadoapp.network.ApiHelper
-import com.cristianvillamil.mercadoapp.network.MainRepository
-import com.cristianvillamil.mercadoapp.network.ProductDetailResponse
-import com.cristianvillamil.mercadoapp.network.RetrofitBuilder
+import com.cristianvillamil.mercadoapp.network.*
 import com.cristianvillamil.mercadoapp.search.recycler_view.toMoneyString
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 
@@ -25,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 class ProductDetailFragment : Fragment() {
     private val args: ProductDetailFragmentArgs by navArgs()
     private lateinit var productDetailViewModel: ProductDetailViewModel
+    private val newWord = "new"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,43 +43,7 @@ class ProductDetailFragment : Fragment() {
                 when (it) {
                     is MainRepository.Result.Success<ProductDetailResponse?> -> {
                         it.data?.let { data ->
-                            productName.text = data.title
-                            productPrice.text = data.price.toMoneyString()
-                            if (data.condition == "new") {
-                                productState.setBackgroundResource(R.drawable.rounded_green_background)
-                                productState.text = "nuevo"
-                            } else {
-                                productState.setBackgroundResource(R.drawable.rounded_orange_background)
-                                productState.text = "usado"
-                            }
-                            if (data.availableQuantity > 0) {
-                                productQuantity.text = "Stock Disponible"
-                                showMoreDetails.isEnabled = true
-                                showMoreDetails.setOnClickListener {
-                                    val intent = Intent(Intent.ACTION_VIEW)
-                                    intent.data = Uri.parse(data.permalink)
-                                    startActivity(intent)
-                                }
-                            } else {
-                                showMoreDetails.isEnabled = false
-                                productQuantity.text = "Proximamente"
-                            }
-                            val pictures = data.pictures
-                            carouselView.setImageListener { position, imageView ->
-                                imageView.scaleType = ImageView.ScaleType.FIT_CENTER
-                                imageView.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        requireContext(),
-                                        android.R.color.white
-                                    )
-                                )
-                                Glide
-                                    .with(requireContext())
-                                    .load(pictures[position].secureUrl)
-                                    .fitCenter()
-                                    .into(imageView)
-                            }
-                            carouselView.pageCount = pictures.size
+                            bindData(data)
                         }
                     }
                     is MainRepository.Result.Error -> {
@@ -89,5 +51,59 @@ class ProductDetailFragment : Fragment() {
                     }
                 }
             })
+    }
+
+    private fun bindData(productDetailResponse: ProductDetailResponse) {
+        productName.text = productDetailResponse.title
+        productPrice.text = productDetailResponse.price.toMoneyString()
+        bindCondition(productDetailResponse.condition)
+        bindProductAvailable(
+            productDetailResponse.availableQuantity,
+            productDetailResponse.permalink
+        )
+        initCarousel(productDetailResponse.pictures)
+    }
+
+    private fun initCarousel(pictures: List<Picture>) {
+        carouselView.setImageListener { position, imageView ->
+            imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+            imageView.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    android.R.color.white
+                )
+            )
+            Glide
+                .with(requireContext())
+                .load(pictures[position].secureUrl)
+                .fitCenter()
+                .into(imageView)
+        }
+        carouselView.pageCount = pictures.size
+    }
+
+    private fun bindProductAvailable(availableQuantity: Int, permalink: String) {
+        if (availableQuantity > 0) {
+            productQuantity.setText(R.string.stock_available)
+            showMoreDetails.isEnabled = true
+            showMoreDetails.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse(permalink)
+                startActivity(intent)
+            }
+        } else {
+            showMoreDetails.isEnabled = false
+            productQuantity.setText(R.string.coming_soon)
+        }
+    }
+
+    private fun bindCondition(productCondition: String) {
+        if (productCondition == newWord) {
+            productState.setBackgroundResource(R.drawable.rounded_green_background)
+            productState.setText(R.string.new_word)
+        } else {
+            productState.setBackgroundResource(R.drawable.rounded_orange_background)
+            productState.setText(R.string.used)
+        }
     }
 }

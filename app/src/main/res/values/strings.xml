@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MercadoApp</string>
+    <string name="stock_available">Stock Disponible</string>
+    <string name="coming_soon">Próximamente</string>
+    <string name="new_word">Nuevo</string>
+    <string name="used">Usado</string>
 </resources>
