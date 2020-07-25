@@ -16,7 +16,6 @@ class SearchViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         productImage.visibility = View.VISIBLE
         Glide.with(this).load(searchResult.thumbnail).into(productImage)
 
-
         productPrice.text = searchResult.price.toMoneyString()
         view.setOnClickListener {
             val directions =
