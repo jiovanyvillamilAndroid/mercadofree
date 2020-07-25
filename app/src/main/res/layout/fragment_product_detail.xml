@@ -9,7 +9,7 @@
         android:id="@+id/carouselView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:fillColor="#FFFFFFFF"
+        app:fillColor="#80FFFFFF"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +54,6 @@
         android:paddingBottom="16dp"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/productPrice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -71,6 +70,7 @@
         android:paddingStart="32dp"
         android:paddingTop="16dp"
         android:paddingEnd="32dp"
+        android:textStyle="bold"
         android:paddingBottom="16dp"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/productState"
@@ -85,21 +85,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Stock Disponible"
-        app:layout_constraintBottom_toTopOf="@+id/buyButton"
+        app:layout_constraintBottom_toTopOf="@+id/showMoreDetails"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/productPrice" />
 
     <Button
-        android:id="@+id/buyButton"
+        android:id="@+id/showMoreDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:backgroundTint="@color/colorAccent"
-        android:text="Comprar"
+        android:text="VER MAS"
         android:textAllCaps="true"
         android:textColor="@color/textColorBlack"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

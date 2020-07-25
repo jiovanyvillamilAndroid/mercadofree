@@ -1,5 +1,7 @@
 package com.cristianvillamil.mercadoapp.detail
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,7 @@ import com.cristianvillamil.mercadoapp.network.ProductDetailResponse
 import com.cristianvillamil.mercadoapp.network.RetrofitBuilder
 import com.cristianvillamil.mercadoapp.search.recycler_view.toMoneyString
 import kotlinx.android.synthetic.main.fragment_product_detail.*
+
 
 class ProductDetailFragment : Fragment() {
     private val args: ProductDetailFragmentArgs by navArgs()
@@ -45,9 +48,23 @@ class ProductDetailFragment : Fragment() {
                             productName.text = data.title
                             productPrice.text = data.price.toMoneyString()
                             if (data.condition == "new") {
+                                productState.setBackgroundResource(R.drawable.rounded_green_background)
                                 productState.text = "nuevo"
                             } else {
+                                productState.setBackgroundResource(R.drawable.rounded_orange_background)
                                 productState.text = "usado"
+                            }
+                            if (data.availableQuantity > 0) {
+                                productQuantity.text = "Stock Disponible"
+                                showMoreDetails.isEnabled = true
+                                showMoreDetails.setOnClickListener {
+                                    val intent = Intent(Intent.ACTION_VIEW)
+                                    intent.data = Uri.parse(data.permalink)
+                                    startActivity(intent)
+                                }
+                            } else {
+                                showMoreDetails.isEnabled = false
+                                productQuantity.text = "Proximamente"
                             }
                             val pictures = data.pictures
                             carouselView.setImageListener { position, imageView ->
