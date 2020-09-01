@@ -21,8 +21,6 @@ class LottieIdlingAnimationResource(
             override fun onAnimationEnd(animation: Animator) {
                 isIdle = true
                 callback?.onTransitionToIdle()
-               // animationView.removeAllAnimatorListeners()
-                // IdlingRegistry.getInstance().unregister(this@LottieIdlingAnimationResource)
             }
         })
     }
