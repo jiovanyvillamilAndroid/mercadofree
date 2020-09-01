@@ -27,7 +27,7 @@ class SearchViewModel : ViewModel() {
             runCatching {
                 mainRepository?.let { mainRepository ->
                     onItemSearchResponse.value =
-                        MainRepository.Result.Success(mainRepository.getUsers(itemName).result)
+                        MainRepository.Result.Success(mainRepository.getProducts(itemName).result)
                 }
             }.onFailure { exception ->
                 onItemSearchResponse.value = MainRepository.Result.Error(exception)

@@ -7,7 +7,7 @@ class MainRepository(private val apiHelper: ApiHelper) {
         data class Error(val throwable: Throwable) : Result<Nothing>()
     }
 
-    suspend fun getUsers(productName: String) = apiHelper.searchProduct(productName)
+    suspend fun getProducts(productName: String) = apiHelper.searchProduct(productName)
 
     suspend fun getProductDetail(productId: String) = apiHelper.getItemDetail(productId)
 }
