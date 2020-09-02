@@ -14,7 +14,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.cristianvillamil.mercadoapp.R
-import com.cristianvillamil.mercadoapp.network.*
+import com.cristianvillamil.mercadoapp.network.ApiHelper
+import com.cristianvillamil.mercadoapp.network.Picture
+import com.cristianvillamil.mercadoapp.network.ProductDetailResponse
+import com.cristianvillamil.mercadoapp.network.RetrofitBuilder
 import com.cristianvillamil.mercadoapp.search.recycler_view.toMoneyString
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 
@@ -39,19 +42,17 @@ class ProductDetailFragment : Fragment() {
         productDetailViewModel.setApiHelper(ApiHelper(RetrofitBuilder.apiService))
         productDetailViewModel.getProductDetail(args.productId)
         productDetailViewModel.getOnItemDetailResponseLiveData().observe(viewLifecycleOwner,
-            Observer {
+            { result ->
                 errorContainer.visibility = View.GONE
-                when (it) {
-                    is MainRepository.Result.Success<ProductDetailResponse?> -> {
-                        it.data?.let { data ->
+                result.fold(
+                    onSuccess = { productDetails ->
+                        productDetails?.let {
                             contentContainer.visibility = View.VISIBLE
-                            bindData(data)
+                            bindData(productDetails)
                         }
-                    }
-                    is MainRepository.Result.Error -> {
-                        showError()
-                    }
-                }
+                    },
+                    onFailure = { showError() }
+                )
             })
     }
 

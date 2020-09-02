@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cristianvillamil.mercadoapp.R
 import com.cristianvillamil.mercadoapp.network.ApiHelper
-import com.cristianvillamil.mercadoapp.network.MainRepository
 import com.cristianvillamil.mercadoapp.network.RetrofitBuilder
 import com.cristianvillamil.mercadoapp.search.model.SearchResult
 import com.cristianvillamil.mercadoapp.search.recycler_view.SearchAdapter
@@ -47,15 +46,15 @@ class SearchFragment : Fragment() {
 
     private fun initOnSearchItemResponseObserver() {
         searchViewModel.getOnItemSearchResponseLiveData().observe(viewLifecycleOwner,
-            {
-                when (it) {
-                    is MainRepository.Result.Success<List<SearchResult>> -> {
-                        onSearchSuccess(it.data)
-                    }
-                    is MainRepository.Result.Error -> {
+            { result ->
+                result.fold(
+                    onSuccess = { searchResult ->
+                        onSearchSuccess(searchResult)
+                    },
+                    onFailure = {
                         showState(false)
                     }
-                }
+                )
             })
     }
 

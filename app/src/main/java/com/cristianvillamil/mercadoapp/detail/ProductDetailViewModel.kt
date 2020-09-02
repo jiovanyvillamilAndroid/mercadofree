@@ -13,9 +13,9 @@ class ProductDetailViewModel : ViewModel() {
 
     private var mainRepository: MainRepository? = null
     private val onItemDetailResponseMutableLiveData =
-        MutableLiveData<MainRepository.Result<ProductDetailResponse?>>()
+        MutableLiveData<Result<ProductDetailResponse?>>()
 
-    fun getOnItemDetailResponseLiveData(): LiveData<MainRepository.Result<ProductDetailResponse?>> =
+    fun getOnItemDetailResponseLiveData(): LiveData<Result<ProductDetailResponse?>> =
         onItemDetailResponseMutableLiveData
 
     fun setApiHelper(apiHelper: ApiHelper) {
@@ -24,14 +24,10 @@ class ProductDetailViewModel : ViewModel() {
 
     fun getProductDetail(productId: String) {
         viewModelScope.launch {
-            runCatching {
-                mainRepository?.let { mainRepository ->
-                    onItemDetailResponseMutableLiveData.value =
-                        MainRepository.Result.Success(mainRepository.getProductDetail(productId))
+            onItemDetailResponseMutableLiveData.value =
+                runCatching {
+                    mainRepository?.getProductDetail(productId)
                 }
-            }.onFailure { throwable ->
-                onItemDetailResponseMutableLiveData.value = MainRepository.Result.Error(throwable)
-            }
         }
     }
 }

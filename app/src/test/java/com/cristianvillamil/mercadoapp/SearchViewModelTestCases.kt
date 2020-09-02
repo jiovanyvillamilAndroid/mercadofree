@@ -2,7 +2,6 @@ package com.cristianvillamil.mercadoapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.cristianvillamil.mercadoapp.network.ApiHelper
-import com.cristianvillamil.mercadoapp.network.MainRepository
 import com.cristianvillamil.mercadoapp.network.SearchResponse
 import com.cristianvillamil.mercadoapp.search.SearchViewModel
 import com.cristianvillamil.mercadoapp.search.model.SearchResult
@@ -13,7 +12,9 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Before
@@ -40,6 +41,12 @@ class SearchViewModelTestCases {
         MockKAnnotations.init(this)
     }
 
+    @ExperimentalCoroutinesApi
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
     fun evaluateSearchError() {
         //Given
@@ -54,15 +61,13 @@ class SearchViewModelTestCases {
 
         //Then
         coVerify { apiHelper.searchProduct(textToSearch) }
-        viewModel.getOnItemSearchResponseLiveData().observeForever {
-            when (it) {
-                is MainRepository.Result.Error -> {
-                    assertEquals(it.throwable, runtimeException)
-                }
-                else -> {
-                    fail()
-                }
-            }
+        viewModel.getOnItemSearchResponseLiveData().observeForever { result ->
+            result.fold(
+                onFailure = {
+                    assertEquals(it, runtimeException)
+                },
+                onSuccess = { fail() }
+            )
         }
     }
 
@@ -87,15 +92,13 @@ class SearchViewModelTestCases {
 
         //Then
         coVerify { apiHelper.searchProduct(textToSearch) }
-        viewModel.getOnItemSearchResponseLiveData().observeForever {
-            when (it) {
-                is MainRepository.Result.Success -> {
-                    assertEquals(it.data, expectedResult.result)
-                }
-                else -> {
-                    fail()
-                }
-            }
+        viewModel.getOnItemSearchResponseLiveData().observeForever { result ->
+            result.fold(
+                onSuccess = { data ->
+                    assertEquals(data, expectedResult.result)
+                },
+                onFailure = { fail() }
+            )
         }
     }
 }
