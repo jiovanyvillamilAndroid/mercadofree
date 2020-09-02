@@ -12,10 +12,10 @@ import kotlinx.coroutines.launch
 class SearchViewModel : ViewModel() {
     private var mainRepository: MainRepository? = null
 
-    private var onItemSearchResponse: MutableLiveData<MainRepository.Result<List<SearchResult>>> =
+    private var onItemSearchResponse: MutableLiveData<Result<List<SearchResult>>> =
         MutableLiveData()
 
-    fun getOnItemSearchResponseLiveData(): LiveData<MainRepository.Result<List<SearchResult>>> =
+    fun getOnItemSearchResponseLiveData(): LiveData<Result<List<SearchResult>>> =
         onItemSearchResponse
 
     fun setApiHelper(apiHelper: ApiHelper) {
@@ -24,13 +24,8 @@ class SearchViewModel : ViewModel() {
 
     fun searchItem(itemName: String) {
         viewModelScope.launch {
-            runCatching {
-                mainRepository?.let { mainRepository ->
-                    onItemSearchResponse.value =
-                        MainRepository.Result.Success(mainRepository.getUsers(itemName).result)
-                }
-            }.onFailure { exception ->
-                onItemSearchResponse.value = MainRepository.Result.Error(exception)
+            onItemSearchResponse.value = kotlin.runCatching {
+                mainRepository?.getProducts(itemName)?.result ?: emptyList()
             }
         }
     }
