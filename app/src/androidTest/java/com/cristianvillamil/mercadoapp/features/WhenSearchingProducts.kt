@@ -1,12 +1,15 @@
 package com.cristianvillamil.mercadoapp.features
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.cristianvillamil.mercadoapp.R
+import com.cristianvillamil.mercadoapp.*
 import com.cristianvillamil.mercadoapp.robots.mercadoFreeBot
+import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 class WhenSearchingProducts : BaseTest() {
 
     @Test
@@ -25,21 +28,6 @@ class WhenSearchingProducts : BaseTest() {
     }
 
     @Test
-    fun userShouldSeeAnErrorAnimationWhenFetchingProductsFails() {
-        mercadoFreeBot {
-            onSearchScreen {
-                search(ERROR_QUERY)
-                registerAnimationIdling(lottieIdlingAnimationResource)
-                withResults {
-                    size shouldBe 0
-                    results.isNotDisplayed()
-                    animationState shouldBe R.id.onError
-                }
-            }
-        }
-    }
-
-    @Test
     fun userShouldSeeAnEmptyAnimationWhenNoProductsWereFound() {
         mercadoFreeBot {
             onSearchScreen {
@@ -49,6 +37,21 @@ class WhenSearchingProducts : BaseTest() {
                     size shouldBe 0
                     results.isNotDisplayed()
                     animationState shouldBe R.id.onEmpty
+                }
+            }
+        }
+    }
+
+    @Test
+    fun userShouldSeeAnErrorAnimationWhenFetchingProductsFails() {
+        mercadoFreeBot {
+            onSearchScreen {
+                search(ERROR_QUERY)
+                registerAnimationIdling(lottieIdlingAnimationResource)
+                withResults {
+                    size shouldBe 0
+                    results.isNotDisplayed()
+                    animationState shouldBe R.id.onError
                 }
             }
         }

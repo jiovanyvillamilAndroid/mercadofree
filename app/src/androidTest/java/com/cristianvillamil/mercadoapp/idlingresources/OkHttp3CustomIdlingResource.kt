@@ -19,7 +19,6 @@ class OkHttp3CustomIdlingResource(private val resourceName: String, okHttp3Clien
     override fun getName() = resourceName
 
     override fun isIdleNow(): Boolean {
-        println(dispatcher.runningCalls().size)
         return dispatcher.runningCallsCount() == 0
     }
 

@@ -9,8 +9,6 @@ import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KTextView
 import com.cristianvillamil.mercadoapp.R
-import com.cristianvillamil.mercadoapp.search.model.SearchResult
-import com.cristianvillamil.mercadoapp.search.recycler_view.toMoneyString
 import org.hamcrest.Matcher
 
 class SearchScreen : Screen<SearchScreen>() {
@@ -18,11 +16,11 @@ class SearchScreen : Screen<SearchScreen>() {
         withId(R.id.inputSearchEditText)
     }
 
-    val animation =KView{
+    val animation = KView {
         withId(R.id.animationView)
     }
 
-    val motionLayoutView = KView{
+    val motionLayoutView = KView {
         withId(R.id.motionLayout)
     }
 

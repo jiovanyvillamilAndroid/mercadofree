@@ -1,14 +1,10 @@
-package com.cristianvillamil.mercadoapp.features
+package com.cristianvillamil.mercadoapp
 
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingRegistry
-import com.cristianvillamil.mercadoapp.MainActivity
 import com.cristianvillamil.mercadoapp.idlingresources.LottieIdlingAnimationResource
-import com.cristianvillamil.mercadoapp.network.BaseUrlProvider
-import com.cristianvillamil.mercadoapp.network.Picture
-import com.cristianvillamil.mercadoapp.network.ProductDetailResponse
-import com.cristianvillamil.mercadoapp.network.SearchResponse
-import com.cristianvillamil.mercadoapp.rules.OkHttpIdlingResourceRule
+import com.cristianvillamil.mercadoapp.idlingresources.OkHttp3CustomIdlingResource
+import com.cristianvillamil.mercadoapp.network.*
 import com.cristianvillamil.mercadoapp.search.SearchFragment
 import com.cristianvillamil.mercadoapp.search.model.SearchResult
 import com.cristianvillamil.mercadoapp.utils.HelperMethods.getFragment
@@ -20,7 +16,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assume
 import org.junit.Before
-import org.junit.Rule
 import java.net.URLDecoder
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
@@ -28,11 +23,10 @@ import kotlin.random.Random
 abstract class BaseTest {
     protected var lottieIdlingAnimationResource: LottieIdlingAnimationResource? = null
 
-    @Rule
-    @JvmField
-    val rule = OkHttpIdlingResourceRule()
+
+    val okHttp3CustomIdlingResource =  OkHttp3CustomIdlingResource("MyOkhttp", OkHttpProvider.instance)
     private val mockWebServer = MockWebServer()
-    private val portNumber = 8080
+    private val portNumber = 8083
 
     private val expectedSearchResult = SearchResponse(
         siteId = SITE_ID,
@@ -51,7 +45,7 @@ abstract class BaseTest {
             id = item.id,
             title = item.title,
             availableQuantity = if (index % 2 == 0) (1..20).random() else 0,
-            condition = if (index % 2 == 0) "new" else "used",
+            condition = if (index % 2 == 0) NEW_PRODUCT_STATUS else USED_PRODUCT_STATUS,
             price = item.price,
             permalink = "https://www.permalink/${item.title}.com",
             pictures = listOf(
@@ -79,13 +73,14 @@ abstract class BaseTest {
             }
         }
         Assume.assumeTrue(lottieIdlingAnimationResource != null)
+        IdlingRegistry.getInstance().register(okHttp3CustomIdlingResource)
     }
 
     @After
     fun tearDown() {
         lottieIdlingAnimationResource?.removeListeners()
-        IdlingRegistry.getInstance().unregister(lottieIdlingAnimationResource)
         mockWebServer.shutdown()
+        IdlingRegistry.getInstance().unregister(lottieIdlingAnimationResource,okHttp3CustomIdlingResource)
     }
 
     private fun getSearchProductsMockResult(query: String): MockResponse {
@@ -117,15 +112,18 @@ abstract class BaseTest {
 
     private fun getProductDetailMockResponse(id: String): MockResponse {
         val data = expectedProductsDetails[id.toInt() - 1]
-        return MockResponse()
-            .addHeader("Content-Type", "application/json")
-            .setBody(data.toJson())
-            .apply {
-                if (data.id == ID_OF_FAILED_PRODUCT_DETAILS_RESPONSE)
-                    this.setResponseCode(500)
-                else
-                    this.setResponseCode(200)
-            }
+        return if (id == ID_OF_FAILED_PRODUCT_DETAILS_RESPONSE) {
+            MockResponse()
+                .addHeader("Content-Type", "application/json")
+                .setBody("{}")
+                .setResponseCode(500)
+        } else {
+            MockResponse()
+                .addHeader("Content-Type", "application/json")
+                .setBody(data.toJson())
+                .setResponseCode(200)
+                .setBodyDelay(50, TimeUnit.MILLISECONDS)
+        }
     }
 
 }

@@ -22,6 +22,18 @@ class SearchProductsActions {
         }
     }
 
+    fun selectItemAtPosition(position: Int): NoActions {
+        screen {
+            searchResults {
+                scrollTo(position)
+                childAt<SearchScreen.SearchResultItem>(position) {
+                    click()
+                }
+            }
+        }
+        return NoActions
+    }
+
     fun withResults(verifications: SearchProductVerifications.() -> NoActions): NoActions {
         return SearchProductVerifications(screen).verifications()
     }

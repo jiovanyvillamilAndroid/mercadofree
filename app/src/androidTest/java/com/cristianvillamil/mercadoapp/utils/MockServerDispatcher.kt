@@ -13,12 +13,14 @@ class MockServerDispatcher(
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.path.orEmpty()
         return when (MercadoFreeEndPoints.fromRequestPath(path.substringAfter("/"))) {
-            MercadoFreeEndPoints.GET_PRODUCT_ITEM -> getProductDetailsMockResponse(
-                path.substringAfterLast(
-                    "/"
+            MercadoFreeEndPoints.GET_PRODUCT_ITEM -> {
+                getProductDetailsMockResponse(
+                    path.substringAfterLast("/")
                 )
-            )
-            MercadoFreeEndPoints.SEARCH_PRODUCTS -> getProductsMockResponse(path.substringAfter("="))
+            }
+            MercadoFreeEndPoints.SEARCH_PRODUCTS -> {
+                getProductsMockResponse(path.substringAfter("="))
+            }
             MercadoFreeEndPoints.UNKNOWN_PATH -> throw UnknownEndPointException(path)
         }
     }
